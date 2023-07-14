@@ -1,0 +1,7 @@
+# Editor
+.vscode
+.idea
+
+# Environment
+main
+.env
