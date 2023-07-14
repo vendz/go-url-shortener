@@ -3,7 +3,6 @@ package controllers
 import (
 	"context"
 	"os"
-	"strconv"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -18,17 +17,6 @@ func (databaseClient Database) ShortenUrl(c *fiber.Ctx) error {
 
 	if err := c.BodyParser(&payload); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "fail", "error": err.Error()})
-	}
-
-	val, err := databaseClient.RedisClient.Get(context.Background(), c.IP()).Result()
-	if err == redis.Nil {
-		_ = databaseClient.RedisClient.Set(context.Background(), c.IP(), os.Getenv("RATE_LIMIT"), time.Hour).Err()
-	} else {
-		valInt, _ := strconv.Atoi(val)
-		if valInt <= 0 {
-			limit, _ := databaseClient.RedisClient.TTL(context.Background(), c.IP()).Result()
-			return c.Status(fiber.StatusTooManyRequests).JSON(fiber.Map{"status": "fail", "error": "Rate Limit Exceeded", "retry-after": limit / time.Nanosecond / time.Minute})
-		}
 	}
 
 	if payload.Url == "" {
@@ -55,24 +43,17 @@ func (databaseClient Database) ShortenUrl(c *fiber.Ctx) error {
 		payload.Expiry = 60 // days
 	}
 
-	err = databaseClient.RedisClient.Set(context.Background(), alias, payload.Url, payload.Expiry*time.Hour*24).Err()
+	err := databaseClient.RedisClient.Set(context.Background(), alias, payload.Url, payload.Expiry*time.Hour*24).Err()
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"status": "fail", "error": err.Error()})
 	}
 
 	res := models.Response{
-		Url:                 payload.Url,
-		CustomShort:         os.Getenv("DOMAIN") + "/" + alias,
-		Expiry:              payload.Expiry,
-		XrateLimitRemaining: 10,
-		XrateLimitReset:     60,
+		Url:         payload.Url,
+		CustomShort: os.Getenv("DOMAIN") + "/" + alias,
+		Expiry:      payload.Expiry,
 	}
 
-	databaseClient.RedisClient.Decr(context.Background(), c.IP()).Err()
-	val, _ = databaseClient.RedisClient.Get(context.Background(), c.IP()).Result()
-	res.XrateLimitRemaining, _ = strconv.Atoi(val)
-	ttl, _ := databaseClient.RedisClient.TTL(context.Background(), c.IP()).Result()
-	res.XrateLimitReset = ttl / time.Nanosecond / time.Minute
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "data": res})
 }
 

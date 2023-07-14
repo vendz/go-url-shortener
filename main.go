@@ -26,7 +26,7 @@ func main() {
 	}))
 
 	app.Use(limiter.New(limiter.Config{
-		Max:        500,
+		Max:        50,
 		Expiration: 30 * time.Second,
 	}))
 	app.Use(logger.New())
