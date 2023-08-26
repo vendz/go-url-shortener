@@ -12,7 +12,7 @@ import (
 func NewDatabase() controllers.Database {
 
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     os.Getenv("REDIS_DB_ADDR_LOCAL"),
+		Addr:     os.Getenv("REDIS_DB_ADDR_DOCKER"),
 		Password: "",
 		DB:       0,
 	})

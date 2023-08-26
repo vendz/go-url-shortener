@@ -11,9 +11,10 @@ services:
       - redis_data:/data
   web:
     build: .
+    image: mycontainerregistry06.azurecr.io/bitsnip
     container_name: "bitsnip"
     ports:
-      - "3000:3000"
+      - "8080:8080"
     volumes:
       - ".:/app"
     restart: "always"
