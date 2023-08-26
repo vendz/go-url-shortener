@@ -36,7 +36,7 @@ func main() {
 	})
 	routes.ShortRoutes(app, &handler)
 
-	err := app.Listen(":8080")
+	err := app.Listen(":3000")
 	if err != nil {
 		panic(err)
 	}
