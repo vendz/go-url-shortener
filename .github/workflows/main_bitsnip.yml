@@ -23,14 +23,14 @@ jobs:
       uses: docker/login-action@v2
       with:
         registry: https://mycontainerregistry06.azurecr.io/
-        username: ${{ secrets.AzureAppService_ContainerUsername_88624f8a799444c99b27d1a6fa935708 }}
-        password: ${{ secrets.AzureAppService_ContainerPassword_4f94fa9d5e7d4ff28d54fb2c302dc728 }}
+        username: ${{ secrets.AzureAppService_ContainerUsername_de9f775224c54e07bc88c38a4de04744 }}
+        password: ${{ secrets.AzureAppService_ContainerPassword_338072b8ab05440c87bc6f4ae696b859 }}
 
     - name: Build and push container image to registry
       uses: docker/build-push-action@v3
       with:
         push: true
-        tags: mycontainerregistry06.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_88624f8a799444c99b27d1a6fa935708 }}/bitsnip:${{ github.sha }}
+        tags: mycontainerregistry06.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_de9f775224c54e07bc88c38a4de04744 }}/mycontainerregistry06/bitsnip:${{ github.sha }}
         file: ./Dockerfile
 
   deploy:
@@ -47,5 +47,5 @@ jobs:
       with:
         app-name: 'bitsnip'
         slot-name: 'production'
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_a41905d353a745aebcfd01b2fa7472ac }}
-        images: 'mycontainerregistry06.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_88624f8a799444c99b27d1a6fa935708 }}/bitsnip:${{ github.sha }}'
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_9c34d6258a3b43e8868a2d1113100a9b }}
+        images: 'mycontainerregistry06.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_de9f775224c54e07bc88c38a4de04744 }}/mycontainerregistry06/bitsnip:${{ github.sha }}'
